@@ -19,7 +19,7 @@ public class SupportRequest {
     private Topic topic;                 // relación con tema
 
     @Enumerated(EnumType.STRING)
-    // private RequestStatus status;        // PENDIENTE / ATENDIDA
+    private RequestStatusEnum status;        // PENDIENTE / ATENDIDA
 
     private String attendedBy;           // quién atendió
     private LocalDateTime attendedAt;    // fecha asistencia
@@ -71,6 +71,12 @@ public class SupportRequest {
     }
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+    public RequestStatusEnum getStatus() {
+        return status;
+    }
+    public void setStatus(RequestStatusEnum status) {
+        this.status = status;
     }
 
     
