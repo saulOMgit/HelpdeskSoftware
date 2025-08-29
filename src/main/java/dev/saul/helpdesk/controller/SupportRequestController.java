@@ -25,4 +25,19 @@ public class SupportRequestController {
     public SupportRequest create(@RequestBody SupportRequest request) {
         return service.createRequest(request);
     }
+
+    @PutMapping("/{id}")
+    public SupportRequest update(@PathVariable Long id, @RequestBody SupportRequest request) {
+        return service.editRequest(id, request);
+    }
+
+    @PutMapping("/{id}/attend")
+    public SupportRequest attend(@PathVariable Long id, @RequestParam String attendedBy) {
+        return service.attendRequest(id, attendedBy);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        service.deleteRequest(id);
+    }
 }

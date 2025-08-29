@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class SupportRequestService {
@@ -22,8 +21,9 @@ public class SupportRequestService {
         return repository.findAllByOrderByRequestDateAsc();
     }
 
-    public Optional<SupportRequest> getRequest(Long id) {
-        return repository.findById(id);
+    public SupportRequest getRequest(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Request with id " + id + " not found"));
     }
 
     public SupportRequest createRequest(SupportRequest request) {
@@ -32,24 +32,37 @@ public class SupportRequestService {
         return repository.save(request);
     }
 
-    public SupportRequest editRequest(SupportRequest request) {
-        request.setUpdatedAt(LocalDateTime.now());
-        return repository.save(request);
+    public SupportRequest editRequest(Long id, SupportRequest newData) {
+        SupportRequest req = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Request not found"));
+
+        req.setDescription(newData.getDescription());
+        req.setTopic(newData.getTopic());
+        req.setUpdatedAt(LocalDateTime.now());
+
+        return repository.save(req);
     }
 
     public SupportRequest attendRequest(Long id, String attendedBy) {
-        SupportRequest req = repository.findById(id).orElseThrow();
+        SupportRequest req = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Request not found"));
+
         req.setStatus(RequestStatusEnum.ATTENDED);
         req.setAttendedBy(attendedBy);
         req.setAttendedAt(LocalDateTime.now());
+
         return repository.save(req);
     }
 
     public void deleteRequest(Long id) {
-        SupportRequest req = repository.findById(id).orElseThrow();
+        SupportRequest req = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Request not found"));
+
         if (req.getStatus() != RequestStatusEnum.ATTENDED) {
-            throw new IllegalStateException("Cannot delete a request that is not attended");
+            throw new IllegalStateException("Request must be attended before deletion");
         }
+
         repository.deleteById(id);
     }
 }
+
