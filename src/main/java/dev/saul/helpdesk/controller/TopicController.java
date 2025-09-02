@@ -2,6 +2,8 @@ package dev.saul.helpdesk.controller;
 
 import dev.saul.helpdesk.model.Topic;
 import dev.saul.helpdesk.repository.TopicRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,33 +26,39 @@ public class TopicController {
 
     // GET by id
     @GetMapping("/{id}")
-    public Topic getById(@PathVariable Long id) {
+    public ResponseEntity<Topic> getById(@PathVariable Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Topic not found with id " + id));
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     // POST (create)
     @PostMapping
-    public Topic create(@RequestBody Topic topic) {
+    public ResponseEntity<Topic> create(@RequestBody Topic topic) {
         topic.setId(null); // forzar creación
-        return repository.save(topic);
+        Topic saved = repository.save(topic);
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 
     // PUT (update)
     @PutMapping("/{id}")
-    public Topic update(@PathVariable Long id, @RequestBody Topic topic) {
-        Topic existing = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Topic not found with id " + id));
-        existing.setName(topic.getName());
-        return repository.save(existing);
+    public ResponseEntity<Topic> update(@PathVariable Long id, @RequestBody Topic topic) {
+        return repository.findById(id)
+                .map(existing -> {
+                    existing.setName(topic.getName());
+                    Topic updated = repository.save(existing);
+                    return ResponseEntity.ok(updated);
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
     // DELETE
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         if (!repository.existsById(id)) {
-            throw new RuntimeException("Topic not found with id " + id);
+            return ResponseEntity.notFound().build();
         }
         repository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }
