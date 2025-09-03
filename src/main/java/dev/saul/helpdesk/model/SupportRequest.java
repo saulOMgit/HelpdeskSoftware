@@ -10,20 +10,20 @@ public class SupportRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String requesterName;        // nombre del solicitante
-    private LocalDateTime requestDate;   // fecha de solicitud
-    private String description;          // descripción de la consulta
+    private String requesterName;
+    private LocalDateTime requestDate;
+    private String description;
 
     @ManyToOne
     @JoinColumn(name = "topic_id")
-    private Topic topic;                 // relación con tema
+    private Topic topic;
 
     @Enumerated(EnumType.STRING)
-    private RequestStatusEnum status;        // PENDIENTE / ATENDIDA
+    private RequestStatusEnum status;  
 
-    private String attendedBy;           // quién atendió
-    private LocalDateTime attendedAt;    // fecha asistencia
-    private LocalDateTime updatedAt;     // fecha edición
+    private String attendedBy;         
+    private LocalDateTime attendedAt; 
+    private LocalDateTime updatedAt;
     public Long getId() {
         return id;
     }
