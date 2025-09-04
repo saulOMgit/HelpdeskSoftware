@@ -7,7 +7,6 @@ import dev.saul.helpdesk.service.SupportRequestService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,11 +41,13 @@ class SupportRequestControllerTest {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(controller).build();
+        mockMvc = MockMvcBuilders
+                .standaloneSetup(controller)
+                .build();
+
         objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-
     }
 
     @Test
@@ -82,8 +83,8 @@ class SupportRequestControllerTest {
         Mockito.when(service.createRequest(any(SupportRequest.class))).thenReturn(request);
 
         mockMvc.perform(post("/api/requests")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.requesterName").value("Saul"))
                 .andExpect(jsonPath("$.topic.name").value("Soporte Técnico"));
@@ -103,8 +104,8 @@ class SupportRequestControllerTest {
         Mockito.when(service.editRequest(eq(1L), any(SupportRequest.class))).thenReturn(updated);
 
         mockMvc.perform(put("/api/requests/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updated)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updated)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.description").value("Problema con WiFi"))
                 .andExpect(jsonPath("$.topic.name").value("Redes"));

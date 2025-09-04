@@ -32,16 +32,26 @@ public class SupportRequestService {
         return repository.save(request);
     }
 
-    public SupportRequest editRequest(Long id, SupportRequest newData) {
-        SupportRequest req = repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Request not found"));
+ public SupportRequest editRequest(Long id, SupportRequest newData) {
+    SupportRequest req = repository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Request not found"));
 
-        req.setDescription(newData.getDescription());
-        req.setTopic(newData.getTopic());
-        req.setUpdatedAt(LocalDateTime.now());
+    req.setDescription(newData.getDescription());
+    req.setTopic(newData.getTopic());
+    req.setRequesterName(newData.getRequesterName());
+    req.setStatus(newData.getStatus());
 
-        return repository.save(req);
+    if (newData.getAttendedBy() != null) {
+        req.setAttendedBy(newData.getAttendedBy());
     }
+    if (newData.getAttendedAt() != null) {
+        req.setAttendedAt(newData.getAttendedAt());
+    }
+
+    req.setUpdatedAt(LocalDateTime.now());
+
+    return repository.save(req);
+}
 
     public SupportRequest attendRequest(Long id, String attendedBy) {
         SupportRequest req = repository.findById(id)
